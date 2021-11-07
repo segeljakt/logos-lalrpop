@@ -1,0 +1,28 @@
+use crate::Expr;
+use crate::Error;
+use crate::Token;
+
+grammar(errors: &mut Vec<Error>);
+
+extern {
+    type Error = ();
+    type Location = usize;
+
+    enum Token {
+        Number => Token::Number(<i32>),
+        "+" => Token::Plus
+    }
+}
+
+Box<T>: Box<T> = T => Box::new(<>);
+
+pub Expr = Expr0;
+
+Expr0: Expr = {
+    <Box<Expr0>> "+" <Box<Expr1>> => Expr::Add(<>),
+    <Expr1>
+}
+
+Expr1: Expr = {
+    Number => Expr::Number(<>),
+}
